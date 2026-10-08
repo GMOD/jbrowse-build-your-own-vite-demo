@@ -14,10 +14,10 @@ draws its own location box, zoom buttons and track checkboxes, and
 ## Usage
 
 ```bash
-yarn
-yarn dev
+pnpm install
+pnpm dev
 ```
 
-`yarn build` writes a static site to `dist`.
+`pnpm build` writes a static site to `dist`.
 
 More examples, one per page: https://jbrowse.org/storybook/byo/
