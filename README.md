@@ -1,7 +1,7 @@
 # vite with the JBrowse engine and your own UI
 
 JBrowse 2's linear genome view engine with none of its stock chrome: this app
-draws its own location box, zoom buttons and track checkboxes, and
+draws its own location box, zoom buttons, track checkboxes and gridlines, and
 `@jbrowse/display-ui/embed` draws the tracks. Built on the v5 prereleases
 (`next` on npm) with [vite](https://vite.dev/).
 

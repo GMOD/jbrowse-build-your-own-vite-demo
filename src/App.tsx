@@ -7,6 +7,7 @@ import {
   TrackToggle,
 } from '@jbrowse/display-ui/embed'
 import { useCreateViewState } from '@jbrowse/react-linear-genome-view2'
+import type { ViewModel } from '@jbrowse/react-linear-genome-view2'
 import RpcWorker from '@jbrowse/react-linear-genome-view2/esm/rpcWorker?worker'
 import { observer } from 'mobx-react'
 
@@ -17,11 +18,37 @@ const genes = [
   { name: 'BRCA2', loc: '13:32,315,086..32,400,266' },
 ]
 
+const Gridlines = observer(function Gridlines({
+  view,
+}: {
+  view: ViewModel['session']['view']
+}) {
+  const path = (major: boolean) =>
+    view.gridlineTicks
+      .filter(tick => tick.major === major)
+      .map(tick => `M${tick.x + 0.5} 0V100000`)
+      .join('')
+  return (
+    <svg
+      aria-hidden
+      className="gridlines"
+      style={{
+        width: view.staticBlocks.totalWidthPx,
+        transform: `translateX(${view.staticBlocksTranslateX}px)`,
+      }}
+    >
+      <path d={path(false)} className="minor" />
+      <path d={path(true)} className="major" />
+    </svg>
+  )
+})
+
 const App = observer(function App() {
   const state = useCreateViewState({
     assembly,
     tracks,
     view,
+    configuration: { preferences: { scrollZoom: true } },
     makeWorkerInstance: () => new RpcWorker(),
   })
   if (!state) {
@@ -62,6 +89,16 @@ const App = observer(function App() {
               {name}
             </button>
           ))}
+          <label>
+            <input
+              type="checkbox"
+              checked={session.view.scrollZoom}
+              onChange={event => {
+                session.view.setScrollZoom(event.target.checked)
+              }}
+            />
+            Zoom on scroll
+          </label>
           {tracks.map(({ trackId, name }) => (
             <TrackToggle key={trackId} view={session.view} trackId={trackId}>
               {name}
@@ -69,6 +106,7 @@ const App = observer(function App() {
           ))}
         </div>
         <TrackStack view={session.view}>
+          <Gridlines view={session.view} />
           <Scalebar view={session.view} />
           <RegionSeams view={session.view} />
         </TrackStack>
@@ -80,7 +118,8 @@ const App = observer(function App() {
           https://github.com/GMOD/jbrowse-build-your-own-vite-demo
         </a>
         . Every control above is this app's own: the location box, the zoom
-        buttons and the track checkboxes call the view model, and{' '}
+        buttons and the checkboxes call the view model, the gridlines are an SVG
+        this file draws from <code>view.gridlineTicks</code>, and{' '}
         <code>TrackStack</code> draws the tracks. More at{' '}
         <a href="https://jbrowse.org/storybook/byo/">
           jbrowse.org/storybook/byo
